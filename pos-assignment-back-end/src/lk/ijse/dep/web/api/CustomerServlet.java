@@ -21,17 +21,19 @@ import java.util.List;
 @WebServlet(name = "CustomerServlet", urlPatterns = "/customers")
 public class CustomerServlet extends HttpServlet {
 
-    @Override
+    /*@Override
     protected void doOptions(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.addHeader("Access-Control-Allow-Origin","http://localhost:3000");
         resp.addHeader("Access-Control-Allow-Headers","Content-Type");
         resp.addHeader("Access-Control-Allow-Methods","POST,PUT,GET,DELETE,OPTIONS");
-    }
+    }*/
 
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
+/*
         resp.addHeader("Access-Control-Allow-Origin","http://localhost:3000");
+*/
 
         String id = req.getParameter("id");
         if (id == null || !id.matches("C\\d{3}")) {
@@ -65,7 +67,9 @@ public class CustomerServlet extends HttpServlet {
 
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+/*
         resp.addHeader("Access-Control-Allow-Origin","http://localhost:3000");
+*/
 
         String id = req.getParameter("id");
         if(id==null || !id.matches("C\\d{3}")){
@@ -110,7 +114,9 @@ public class CustomerServlet extends HttpServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
+/*
         response.addHeader("Access-Control-Allow-Origin","http://localhost:3000");
+*/
 
         BasicDataSource cp = (BasicDataSource) getServletContext().getAttribute("cp");
 
@@ -153,7 +159,9 @@ public class CustomerServlet extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
+/*
         response.addHeader("Access-Control-Allow-Origin","http://localhost:3000");
+*/
 
         String id = request.getParameter("id");
         BasicDataSource cp = (BasicDataSource) getServletContext().getAttribute("cp");

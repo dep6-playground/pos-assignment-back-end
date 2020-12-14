@@ -4,6 +4,7 @@
          xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
          version="4.0">
 
+<!--
     <filter>
         <filter-name>SecurityFilter</filter-name>
         <filter-class>lk.ijse.dep.web.filter.SecurityFilter</filter-class>
@@ -15,12 +16,13 @@
     </filter>
 
     <filter-mapping>
-        <filter-name>SecurityFilter</filter-name>
+        <filter-name>CorsFilter</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 
     <filter-mapping>
-        <filter-name>CorsFilter</filter-name>
+        <filter-name>SecurityFilter</filter-name>
         <url-pattern>/*</url-pattern>
-    </filter-mapping>
+    </filter-mapping>-->
+
 </web-app>

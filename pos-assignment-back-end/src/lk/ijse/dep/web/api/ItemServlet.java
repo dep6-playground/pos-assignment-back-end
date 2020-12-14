@@ -20,15 +20,17 @@ import java.util.List;
 @WebServlet(name = "ItemServlet", urlPatterns = "/items")
 public class ItemServlet extends HttpServlet {
 
-    @Override
+    /*@Override
     protected void doOptions(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.addHeader("Access-Control-Allow-Origin","http://localhost:3000");
         resp.addHeader("Access-Control-Allow-Headers","Content-Type");
         resp.addHeader("Access-Control-Allow-Methods","POST,PUT,GET,DELETE,OPTIONS");
-    }
+    }*/
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+/*
         response.addHeader("Access-Control-Allow-Origin","http://localhost:3000");
+*/
 
 
         BasicDataSource cp = (BasicDataSource) getServletContext().getAttribute("cp");
@@ -68,7 +70,9 @@ public class ItemServlet extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
+/*
         response.addHeader("Access-Control-Allow-Origin","http://localhost:3000");
+*/
 
         String code = request.getParameter("code");
         BasicDataSource cp = (BasicDataSource) getServletContext().getAttribute("cp");
@@ -107,7 +111,9 @@ public class ItemServlet extends HttpServlet {
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
+/*
         resp.addHeader("Access-Control-Allow-Origin","http://localhost:3000");
+*/
 
         String code = req.getParameter("code");
         if (code == null || !code.matches("I\\d{3}")) {
@@ -141,7 +147,9 @@ public class ItemServlet extends HttpServlet {
 
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+/*
         resp.addHeader("Access-Control-Allow-Origin","http://localhost:3000");
+*/
 
         String code = req.getParameter("code");
         if(code==null || !code.matches("I\\d{3}")){
