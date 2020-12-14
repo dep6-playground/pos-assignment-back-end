@@ -110,31 +110,36 @@ public class CustomerServlet extends HttpServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        Jsonb jsonb = JsonbBuilder.create();
-        Customer customer = jsonb.fromJson(request.getReader(),Customer.class);
-
         response.addHeader("Access-Control-Allow-Origin","http://localhost:3000");
-        response.setContentType("application/json");
 
         BasicDataSource cp = (BasicDataSource) getServletContext().getAttribute("cp");
-        try {
-            Connection connection = cp.getConnection();
-            PreparedStatement pstm = connection.prepareStatement("INSERT INTO Customer VALUES (?,?,?) ");
+
+        try(Connection connection = cp.getConnection()) {
+            Jsonb jsonb = JsonbBuilder.create();
+            Customer customer = jsonb.fromJson(request.getReader(),Customer.class);
+
+            if(customer.getId() ==null || customer.getName() == null || customer.getAddress() == null){
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+                return;
+            }
+
+            PreparedStatement pstm = connection.prepareStatement("INSERT INTO Customers VALUES (?,?,?)");
             pstm.setString(1,customer.getId());
             pstm.setString(2,customer.getName());
             pstm.setString(3,customer.getAddress());
-            boolean success = pstm.executeUpdate()>0;
+            if(pstm.executeUpdate()>0){
+                response.setStatus(HttpServletResponse.SC_CREATED);
+            }else{
+                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            }
 
-            if(success){
-                response.getWriter().println(jsonb.toJson(true));
-            }
-            else{
-                response.getWriter().println(jsonb.toJson(false));
-            }
-            connection.close();
-        } catch (SQLException throwables){
+        }catch (SQLIntegrityConstraintViolationException ex){
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+        }catch (SQLException throwables){
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             throwables.printStackTrace();
-            response.getWriter().println("<h1>Wade kachal</h1>");
+        }catch (JsonbException exp){
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST);
         }
 
 
