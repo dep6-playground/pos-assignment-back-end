@@ -123,7 +123,7 @@ public class CustomerServlet extends HttpServlet {
                 return;
             }
 
-            PreparedStatement pstm = connection.prepareStatement("INSERT INTO Customers VALUES (?,?,?)");
+            PreparedStatement pstm = connection.prepareStatement("INSERT INTO Customer VALUES (?,?,?)");
             pstm.setString(1,customer.getId());
             pstm.setString(2,customer.getName());
             pstm.setString(3,customer.getAddress());
@@ -153,39 +153,41 @@ public class CustomerServlet extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        BasicDataSource cp = (BasicDataSource) getServletContext().getAttribute("cp");
-
         response.addHeader("Access-Control-Allow-Origin","http://localhost:3000");
 
+        String id = request.getParameter("id");
+        BasicDataSource cp = (BasicDataSource) getServletContext().getAttribute("cp");
         response.setContentType("application/json");
-        try (PrintWriter out = response.getWriter()){
 
-            try {
-                Connection con = cp.getConnection();
-                System.out.println(cp.getNumActive());
-                System.out.println(cp.getNumIdle());
-                Statement stm = con.createStatement();
-                ResultSet rst = stm.executeQuery("SELECT * FROM Customer");
-
-                List<Customer> customerList = new ArrayList<>();
-
-                while (rst.next()){
-                    int id= rst.getInt(1);
-                    String name= rst.getString(2);
-                    String address= rst.getString(3);
-                    customerList.add(new Customer(id,name,address));
-
-                }
-
-                Jsonb jsonb = JsonbBuilder.create();
-                out.println(jsonb.toJson(customerList));
-                con.close();
-
-            } catch (  SQLException exception) {
-                exception.printStackTrace();
+        try(Connection connection = cp.getConnection()){
+            PrintWriter out = response.getWriter();
+            PreparedStatement pstm = connection.prepareStatement("SELETE * FROM Customer"+((id != null)? " WHERE id=?":""));
+            if(id != null){
+                pstm.setObject(1,id);
+            }
+            ResultSet rst = pstm.executeQuery();
+            List<Customer> customerList = new ArrayList<>();
+            while (rst.next()){
+                id = rst.getString(1);
+                String name = rst.getString(2);
+                String address = rst.getString(3)
             }
 
+            if(id != null && customerList.isEmpty()){
+                response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            }
+            else{
+                Jsonb jsonb = JsonbBuilder.create();
+                out.println(jsonb.toJson(customerList));
+            }
+        }catch (SQLException e){
+            e.printStackTrace();
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
+
+
+
+
     }
 
 }
