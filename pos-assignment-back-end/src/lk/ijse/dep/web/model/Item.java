@@ -1,16 +1,17 @@
 package lk.ijse.dep.web.model;
 
 public class Item {
-    private int code;
+    private String code;
     private String description;
     private int qtyOnHand;
-    private int unitPrice;
+    private double unitPrice;
 
-    public Item(int code, String description, int qtyOnHand, int unitPrice) {
-        this.setCode(code);
-        this.setDescription(description);
-        this.setQtyOnHand(qtyOnHand);
-        this.setUnitPrice(unitPrice);
+
+    public Item(String code, String description, int qtyOnHand, double unitPrice) {
+        this.code = code;
+        this.description = description;
+        this.qtyOnHand = qtyOnHand;
+        this.unitPrice = unitPrice;
     }
 
     public Item(){
@@ -18,11 +19,11 @@ public class Item {
     }
 
 
-    public int getCode() {
+    public String getCode() {
         return code;
     }
 
-    public void setCode(int code) {
+    public void setCode(String code) {
         this.code = code;
     }
 
@@ -42,11 +43,11 @@ public class Item {
         this.qtyOnHand = qtyOnHand;
     }
 
-    public int getUnitPrice() {
+    public double getUnitPrice() {
         return unitPrice;
     }
 
-    public void setUnitPrice(int unitPrice) {
+    public void setUnitPrice(double unitPrice) {
         this.unitPrice = unitPrice;
     }
 }

@@ -161,7 +161,7 @@ public class CustomerServlet extends HttpServlet {
 
         try(Connection connection = cp.getConnection()){
             PrintWriter out = response.getWriter();
-            PreparedStatement pstm = connection.prepareStatement("SELETE * FROM Customer"+((id != null)? " WHERE id=?":""));
+            PreparedStatement pstm = connection.prepareStatement("SELECT * FROM Customer"+((id != null)? " WHERE id=?":""));
             if(id != null){
                 pstm.setObject(1,id);
             }
@@ -170,7 +170,8 @@ public class CustomerServlet extends HttpServlet {
             while (rst.next()){
                 id = rst.getString(1);
                 String name = rst.getString(2);
-                String address = rst.getString(3)
+                String address = rst.getString(3);
+                customerList.add(new Customer(id,name,address));
             }
 
             if(id != null && customerList.isEmpty()){
