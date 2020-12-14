@@ -3,11 +3,11 @@ package lk.ijse.dep.web.model;
 public class Item {
     private String code;
     private String description;
-    private int qtyOnHand;
-    private double unitPrice;
+    private String qtyOnHand;
+    private String unitPrice;
 
 
-    public Item(String code, String description, int qtyOnHand, double unitPrice) {
+    public Item(String code, String description, String qtyOnHand, String unitPrice) {
         this.code = code;
         this.description = description;
         this.qtyOnHand = qtyOnHand;
@@ -35,19 +35,19 @@ public class Item {
         this.description = description;
     }
 
-    public int getQtyOnHand() {
+    public String getQtyOnHand() {
         return qtyOnHand;
     }
 
-    public void setQtyOnHand(int qtyOnHand) {
+    public void setQtyOnHand(String qtyOnHand) {
         this.qtyOnHand = qtyOnHand;
     }
 
-    public double getUnitPrice() {
+    public String getUnitPrice() {
         return unitPrice;
     }
 
-    public void setUnitPrice(double unitPrice) {
+    public void setUnitPrice(String unitPrice) {
         this.unitPrice = unitPrice;
     }
 }
