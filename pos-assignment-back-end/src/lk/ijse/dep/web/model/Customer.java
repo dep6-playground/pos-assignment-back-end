@@ -1,12 +1,12 @@
 package lk.ijse.dep.web.model;
 
 public class Customer {
-    private int id;
+    private String id;
     private String name;
     private String address;
 
 
-    public Customer(int id, String name, String address) {
+    public Customer(String id, String name, String address) {
         this.setId(id);
         this.setName(name);
         this.setAddress(address);
@@ -16,12 +16,11 @@ public class Customer {
 
     }
 
-
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
