@@ -29,31 +29,33 @@ public class CustomerServlet extends HttpServlet {
 
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        Jsonb jsonb = JsonbBuilder.create();
-        Customer customer = jsonb.fromJson(req.getReader(),Customer.class);
-
-        resp.addHeader("Access-Control-Allow-Origin","http://localhost:3000");
-        resp.setContentType("application/json");
+        String id = req.getParameter("id");
+        if (id == null || !id.matches("C\\d{3}")) {
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
+            return;
+        }
 
         BasicDataSource cp = (BasicDataSource) getServletContext().getAttribute("cp");
-        try {
-            Connection connection = cp.getConnection();
-            PreparedStatement pstm = connection.prepareStatement("DELETE FROM Customer WHERE ID = ?;");
-            /*pstm.setString(1,customer.getName());
-            pstm.setString(2,customer.getAddress());*/
-            pstm.setInt(1,customer.getId());
-            boolean success = pstm.executeUpdate()>0;
-
-            if(success){
-                resp.getWriter().println(jsonb.toJson(true));
+        try (Connection connection = cp.getConnection()) {
+            PreparedStatement pstm = connection.prepareStatement("SELECT * FROM Customer WHERE id=?");
+            pstm.setObject(1, id);
+            if (pstm.executeQuery().next()) {
+                pstm = connection.prepareStatement("DELETE FROM Customer WHERE id=?");
+                pstm.setObject(1, id);
+                boolean success = pstm.executeUpdate() > 0;
+                if (success) {
+                    resp.setStatus(HttpServletResponse.SC_NO_CONTENT);
+                } else {
+                    resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                }
+            } else {
+                resp.sendError(HttpServletResponse.SC_NOT_FOUND);
             }
-            else{
-                resp.getWriter().println(jsonb.toJson(false));
-            }
-            connection.close();
+        } catch (SQLIntegrityConstraintViolationException ex) {
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
         } catch (SQLException throwables){
+            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             throwables.printStackTrace();
-            resp.getWriter().println("<h1>Wade kachal</h1>");
         }
     }
 
@@ -122,6 +124,10 @@ public class CustomerServlet extends HttpServlet {
     }
 
 
+    @Override
+    protected void doHead(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        resp.setStatus(HttpServletResponse.SC_NOT_IMPLEMENTED);
+    }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
