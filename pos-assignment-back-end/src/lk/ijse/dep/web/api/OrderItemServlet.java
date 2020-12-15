@@ -98,35 +98,45 @@ public class OrderItemServlet extends HttpServlet {
 
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+
         String orderId = req.getParameter("orderId");
-        String customerId = req.getParameter("customerId");
+        String itemCode = req.getParameter("itemCode");
         if(orderId==null || !orderId.matches("O\\d{3}")){
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
+            return;
+        }
+        if(itemCode==null || !itemCode.matches("I\\d{3}")){
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
 
         BasicDataSource cp = (BasicDataSource) getServletContext().getAttribute("cp");
         try(Connection connection = cp.getConnection()) {
+
             Jsonb jsonb = JsonbBuilder.create();
             OrderItem orderItem = jsonb.fromJson(req.getReader(), OrderItem.class);
 
-            if(orderItem.getOrderId() != null || orderItem.getCustomerId() != null || orderItem.getItemCode() ==null || orderItem.getQty() == null || orderItem.getSubTotal() == null){
+            if(orderItem.getOrderId() != null || orderItem.getItemCode() != null || orderItem.getCustomerId() == null || orderItem.getQty() == null || orderItem.getSubTotal() == null){
+                resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
+
+                return;
+            }
+
+            if (orderItem.getCustomerId().trim().isEmpty() || orderItem.getQty().trim().isEmpty() || orderItem.getSubTotal().trim().isEmpty()) {
                 resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
                 return;
             }
-            if (orderItem.getItemCode().trim().isEmpty() || orderItem.getQty().trim().isEmpty() || orderItem.getSubTotal().trim().isEmpty()) {
-                resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
-                return;
-            }
+
+
             PreparedStatement pstm = connection.prepareStatement("SELECT * FROM OrderItem WHERE orderId=?");
             pstm.setObject(1, orderId);
+
             if (pstm.executeQuery().next()) {
-                pstm = connection.prepareStatement("UPDATE OrderItem SET customerId=?, itemCode=?, qty=?, subTotal=? WHERE orderId=?");
-                pstm.setObject(1,customerId);
-                pstm.setObject(2, orderItem.getItemCode());
-                pstm.setObject(3, orderItem.getQty());
-                pstm.setObject(4, orderItem.getSubTotal());
-                pstm.setObject(5, orderId);
+                pstm = connection.prepareStatement("UPDATE OrderItem SET qty=?, subTotal=? WHERE orderId=? AND itemCode=?");
+                pstm.setObject(1,orderItem.getQty());
+                pstm.setObject(2, orderItem.getSubTotal());
+                pstm.setObject(3, orderId);
+                pstm.setObject(4, itemCode);
                 if (pstm.executeUpdate() > 0) {
                     resp.setStatus(HttpServletResponse.SC_NO_CONTENT);
                 } else {
@@ -144,7 +154,12 @@ public class OrderItemServlet extends HttpServlet {
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String orderId = req.getParameter("orderId");
+        String itemCode = req.getParameter("itemCode");
         if (orderId == null || !orderId.matches("O\\d{3}")) {
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
+            return;
+        }
+        if (itemCode == null || !itemCode.matches("I\\d{3}")) {
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
@@ -154,8 +169,9 @@ public class OrderItemServlet extends HttpServlet {
             PreparedStatement pstm = connection.prepareStatement("SELECT * FROM OrderItem WHERE orderId=?");
             pstm.setObject(1, orderId);
             if (pstm.executeQuery().next()) {
-                pstm = connection.prepareStatement("DELETE FROM OrderItem WHERE orderId=?");
+                pstm = connection.prepareStatement("DELETE FROM OrderItem WHERE orderId=? AND itemCode=?");
                 pstm.setObject(1, orderId);
+                pstm.setObject(2, itemCode);
                 boolean success = pstm.executeUpdate() > 0;
                 if (success) {
                     resp.setStatus(HttpServletResponse.SC_NO_CONTENT);
