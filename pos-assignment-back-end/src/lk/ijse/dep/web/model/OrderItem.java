@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2020
+ * @ uvin6667
+ *
+ */
+
 package lk.ijse.dep.web.model;
 
 public class OrderItem {
