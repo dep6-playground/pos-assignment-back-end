@@ -77,7 +77,7 @@ public class OrderServlet extends HttpServlet {
                 return;
             }*/
 
-            PreparedStatement pstm = connection.prepareStatement("SELECT SUM(CAST(subTotal) AS DOUBLE ) FROM OrderItem WHERE orderId=?");
+            PreparedStatement pstm = connection.prepareStatement("SELECT SUM(subTotal) FROM OrderItem WHERE orderId=?");
             pstm.setString(1,orderId);
             ResultSet resultSet = pstm.executeQuery();
             resultSet.next();
