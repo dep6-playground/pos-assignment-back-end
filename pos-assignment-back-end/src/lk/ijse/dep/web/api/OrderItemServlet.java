@@ -45,8 +45,9 @@ public class OrderItemServlet extends HttpServlet {
                 String customerId = rst.getString(2);
                 String itemCode = rst.getString(3);
                 String qty = rst.getString(4);
-                String subTotal = rst.getString(5);
-                orderItemList.add(new OrderItem(orderId,customerId,itemCode,qty,subTotal));
+                String unitPrice = rst.getString(5);
+                String subTotal = rst.getString(6);
+                orderItemList.add(new OrderItem(orderId,customerId,itemCode,qty,unitPrice,subTotal));
             }
 
             if(orderId != null && orderItemList.isEmpty()){
@@ -80,25 +81,24 @@ public class OrderItemServlet extends HttpServlet {
                 return;
             }
 
-            PreparedStatement pstm = connection.prepareStatement("INSERT INTO OrderItem VALUES (?,?,?,?,?)");
+            PreparedStatement pstm = connection.prepareStatement("INSERT INTO OrderItem VALUES (?,?,?,?,?,?)");
             pstm.setString(1,orderItem.getOrderId());
             pstm.setString(2,orderItem.getCustomerId());
             pstm.setString(3,orderItem.getItemCode());
             pstm.setString(4,orderItem.getQty());
-            pstm.setString(5,orderItem.getSubTotal());
+            pstm.setString(5,orderItem.getUnitPrice());
+            pstm.setString(6,orderItem.getSubTotal());
             if(pstm.executeUpdate()>0){
                 resp.setStatus(HttpServletResponse.SC_CREATED);
             }else{
                 resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             }
 
-        }catch (SQLIntegrityConstraintViolationException ex){
+        }catch (SQLIntegrityConstraintViolationException | JsonbException ex){
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
         }catch (SQLException throwables){
             resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             throwables.printStackTrace();
-        }catch (JsonbException exp){
-            resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
         }
     }
 
@@ -138,11 +138,12 @@ public class OrderItemServlet extends HttpServlet {
             pstm.setObject(1, orderId);
 
             if (pstm.executeQuery().next()) {
-                pstm = connection.prepareStatement("UPDATE OrderItem SET qty=?, subTotal=? WHERE orderId=? AND itemCode=?");
+                pstm = connection.prepareStatement("UPDATE OrderItem SET qty=?, unitPrice=?, subTotal=? WHERE orderId=? AND itemCode=?");
                 pstm.setObject(1,orderItem.getQty());
-                pstm.setObject(2, orderItem.getSubTotal());
-                pstm.setObject(3, orderId);
-                pstm.setObject(4, itemCode);
+                pstm.setObject(2,orderItem.getUnitPrice());
+                pstm.setObject(3, orderItem.getSubTotal());
+                pstm.setObject(4, orderId);
+                pstm.setObject(5, itemCode);
                 if (pstm.executeUpdate() > 0) {
                     resp.setStatus(HttpServletResponse.SC_NO_CONTENT);
                 } else {

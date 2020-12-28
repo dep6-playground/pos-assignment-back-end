@@ -11,16 +11,18 @@ public class OrderItem {
     private String customerId;
     private String itemCode;
     private String qty;
+    private String unitPrice;
     private String subTotal;
 
     public OrderItem() {
     }
 
-    public OrderItem(String orderId, String customerId, String itemCode, String qty, String subTotal) {
+    public OrderItem(String orderId, String customerId, String itemCode, String qty, String unitPrice, String subTotal) {
         this.setOrderId(orderId);
         this.setCustomerId(customerId);
         this.setItemCode(itemCode);
         this.setQty(qty);
+        this.setUnitPrice(unitPrice);
         this.setSubTotal(subTotal);
     }
 
@@ -56,6 +58,14 @@ public class OrderItem {
         this.qty = qty;
     }
 
+    public String getUnitPrice() {
+        return unitPrice;
+    }
+
+    public void setUnitPrice(String unitPrice) {
+        this.unitPrice = unitPrice;
+    }
+
     public String getSubTotal() {
         return subTotal;
     }
@@ -71,6 +81,7 @@ public class OrderItem {
                 ", customerId='" + customerId + '\'' +
                 ", itemCode='" + itemCode + '\'' +
                 ", qty='" + qty + '\'' +
+                ", unitPrice='" + unitPrice + '\'' +
                 ", subTotal='" + subTotal + '\'' +
                 '}';
     }
