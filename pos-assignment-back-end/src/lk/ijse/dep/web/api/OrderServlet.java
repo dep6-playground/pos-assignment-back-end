@@ -81,6 +81,7 @@ public class OrderServlet extends HttpServlet {
                 resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
                 return;
             }*/
+            PrintWriter out = resp.getWriter();
 
             PreparedStatement pstm = connection.prepareStatement("SELECT SUM(subTotal) FROM OrderItem WHERE orderId=?");
             pstm.setString(1,orderId);
@@ -95,6 +96,8 @@ public class OrderServlet extends HttpServlet {
 
             if(pstm.executeUpdate()>0){
                 resp.setStatus(HttpServletResponse.SC_CREATED);
+                Jsonb jsonb = JsonbBuilder.create();
+                out.println(jsonb.toJson(new Order(orderId,customerId,orderTotal)));
             }else{
                 resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             }
